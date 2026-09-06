@@ -32,3 +32,22 @@
 - **Git 提交**：待创建 `fix: prevent push after isolated commit failure`
 
 ---
+
+## [2026-09-06 23:27] 完成同步引擎事务边界
+
+- **需求/问题描述**：
+  > 根据 HANDOFF20260906203616.md 继续开发 Task 8 同步引擎
+
+- **实际实现的功能与改动**：
+  - [同步编排]：按读取、渲染、文件协调、Git 同步顺序执行单次事务。
+  - [并发控制]：增加阻塞同步与空闲时非阻塞同步入口，异常时保证锁释放。
+  - [结果日志]：记录耗时、文件变更数量、提交/推送结果及失败阶段。
+  - [测试/验证]：Task 8 focused tests 9 passed，项目测试 86 passed。
+
+- **涉及文件**：
+  - `src/sync_engine.py`
+  - `tests/test_sync_engine.py`
+
+- **Git 提交**：待创建 `feat: coordinate snapshot sync transactions`
+
+---
