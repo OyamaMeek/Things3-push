@@ -29,7 +29,7 @@
   - `src/git_ops.py`
   - `tests/test_git_ops.py`
 
-- **Git 提交**：待创建 `fix: prevent push after isolated commit failure`
+- **Git 提交**：`c594ec1 fix: prevent push after isolated commit failure`
 
 ---
 
@@ -48,6 +48,6 @@
   - `src/sync_engine.py`
   - `tests/test_sync_engine.py`
 
-- **Git 提交**：待创建 `feat: coordinate snapshot sync transactions`
+- **Git 提交**：`d758b28 feat: coordinate snapshot sync transactions`
 
 ---
