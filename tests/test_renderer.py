@@ -119,6 +119,33 @@ def test_case_only_uuid_collision_preserves_every_container_document():
         assert container_path.relative_dir / "已取消.md" in rendered.files
 
 
+def test_uuid_tokens_cannot_escape_container_roots():
+    projects = (
+        ContainerSnapshot("../TARGET", "project", "Release"),
+        ContainerSnapshot(r"..\TARGET", "project", "release"),
+    )
+    areas = (
+        ContainerSnapshot("A:/../TARGET", "area", "Focus"),
+        ContainerSnapshot(r"A:\..\TARGET", "area", "focus"),
+    )
+
+    paths = allocate_container_paths(projects, areas)
+    rendered = render_snapshot(ThingsSnapshot(projects=projects, areas=areas))
+
+    assert len({path.relative_dir.as_posix().casefold() for path in paths}) == 4
+    for container_path in paths:
+        assert not container_path.relative_dir.is_absolute()
+        assert ".." not in container_path.relative_dir.parts
+        assert container_path.relative_dir.parts[0] == (
+            "Projects" if container_path.kind == "project" else "Areas"
+        )
+    for path in rendered.files:
+        assert not path.is_absolute()
+        assert ".." not in path.parts
+        if len(path.parts) > 1:
+            assert path.parts[0] in {"Projects", "Areas"}
+
+
 def test_terminal_tasks_sort_newest_stop_date_first():
     snapshot = ThingsSnapshot(tasks=(
         TaskSnapshot("old", "Old", "completed", stop_date="2026-01-01"),

@@ -32,8 +32,19 @@ def _container_sort_key(container: ContainerSnapshot) -> Tuple[str, str]:
     return (container.title.casefold(), container.uuid)
 
 
+def _uuid_token(uuid: str) -> str:
+    """Return a deterministic, one-segment-safe representation of a UUID."""
+    token = []
+    for character in uuid:
+        if character.isascii() and (character.isalnum() or character in "-_"):
+            token.append(character)
+        else:
+            token.extend("x{:02x}".format(byte) for byte in character.encode("utf-8"))
+    return "".join(token) or "uuid"
+
+
 def _suffix_segment(base: str, uuid: str, length: int, ordinal: int = 0) -> str:
-    suffix = "-" + uuid[:length]
+    suffix = "-" + _uuid_token(uuid)[:length]
     if ordinal:
         suffix += "-" + str(ordinal)
     available = _MAX_SEGMENT_LENGTH - len(suffix)
@@ -44,13 +55,18 @@ def _suffix_segment(base: str, uuid: str, length: int, ordinal: int = 0) -> str:
 
 def _unique_suffix_lengths(containers: Sequence[ContainerSnapshot], bases: Dict[str, str], needs_suffix: Set[str]) -> Dict[str, int]:
     """Return UUID prefix lengths that distinguish suffixed peers."""
-    lengths = {container.uuid: min(8, len(container.uuid)) for container in containers if container.uuid in needs_suffix}
+    lengths = {
+        container.uuid: min(8, len(_uuid_token(container.uuid)))
+        for container in containers
+        if container.uuid in needs_suffix
+    }
     while True:
         groups: Dict[Tuple[str, str], List[ContainerSnapshot]] = {}
         for container in containers:
             if container.uuid not in needs_suffix:
                 continue
-            key = (bases[container.uuid].casefold(), container.uuid[:lengths[container.uuid]].casefold())
+            token = _uuid_token(container.uuid)
+            key = (bases[container.uuid].casefold(), token[:lengths[container.uuid]].casefold())
             groups.setdefault(key, []).append(container)
         duplicates = [group for group in groups.values() if len(group) > 1]
         if not duplicates:
@@ -59,7 +75,8 @@ def _unique_suffix_lengths(containers: Sequence[ContainerSnapshot], bases: Dict[
         for group in duplicates:
             for container in group:
                 current = lengths[container.uuid]
-                if current < len(container.uuid):
+                token = _uuid_token(container.uuid)
+                if current < len(token):
                     lengths[container.uuid] = current + 1
                     changed = True
         if not changed:
@@ -94,7 +111,9 @@ def _allocate_kind(containers: Iterable[ContainerSnapshot], kind: str, root: str
         key=_container_sort_key,
     )
     bases = {
-        container.uuid: sanitize_path_segment(container.title, "{}-{}".format(kind, container.uuid[:8]))
+        container.uuid: sanitize_path_segment(
+            container.title, "{}-{}".format(kind, _uuid_token(container.uuid)[:8])
+        )
         for container in active
     }
     needs_suffix: Set[str] = set()
@@ -143,7 +162,9 @@ def _allocate_kind(containers: Iterable[ContainerSnapshot], kind: str, root: str
             ordinal = 0
             while segment.casefold() in used_segments:
                 ordinal += 1
-                segment = _suffix_segment(bases[container.uuid], container.uuid, len(container.uuid), ordinal)
+                segment = _suffix_segment(
+                    bases[container.uuid], container.uuid, len(_uuid_token(container.uuid)), ordinal
+                )
         used_segments.add(segment.casefold())
         paths.append(ContainerPath(container.uuid, kind, Path(root) / segment))
     return paths
