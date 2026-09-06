@@ -63,6 +63,21 @@ def test_sync_stops_before_push_when_commit_fails(tmp_path):
     assert all(invocation.args[0][1] != "push" for invocation in runner.call_args_list)
 
 
+def test_existing_pending_ref_does_not_push_when_isolated_commit_fails_early(tmp_path):
+    def runner(command, **kwargs):
+        if command[:2] == ["git", "read-tree"]:
+            return CompletedProcess(command, 1, "", "index initialization failed")
+        if command[:5] == ["git", "show-ref", "--verify", "--quiet", PENDING_PUSH_REF]:
+            return CompletedProcess(command, 0, "", "")
+        return ok(command, **kwargs)
+
+    runner = Mock(side_effect=runner)
+    assert GitClient(tmp_path, runner=runner).sync(
+        ChangeSet(added=(Path("Inbox.md"),)), True, True, "origin", "main"
+    ) == (False, False)
+    assert all(invocation.args[0][1] != "push" for invocation in runner.call_args_list)
+
+
 def test_timeout_is_logged_and_returns_false(tmp_path, caplog):
     runner = Mock(side_effect=TimeoutExpired(["git", "push"], 5))
     assert not GitClient(tmp_path, timeout=5, runner=runner).push("origin", "main")

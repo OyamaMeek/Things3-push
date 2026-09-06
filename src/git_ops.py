@@ -19,6 +19,9 @@ _LOG = logging.getLogger(__name__)
 _URL_RE = re.compile(r"https?://[^\s'\"<>]+")
 _SECRET_VALUE_RE = re.compile(r"(?i)\b(token|auth-token|password)=([^&#\s]+)")
 _RENAME_OR_COPY = {"R", "C"}
+_COMMIT_NO_DIFF = "no-diff"
+_COMMIT_SUCCESS = "commit-success"
+_COMMIT_FAILURE = "commit-failure"
 
 
 @dataclass(frozen=True)
@@ -91,7 +94,7 @@ class GitClient:
         self.repo_path = Path(repo_path)
         self.timeout = timeout
         self.runner = runner
-        self._commit_found_diff = False
+        self._commit_state = _COMMIT_NO_DIFF
 
     def _run(
         self, args: Sequence[str], env: Optional[Mapping[str, str]] = None
@@ -146,10 +149,16 @@ class GitClient:
         return False
 
     def _isolated_commit(self, paths: Sequence[Path], now: Optional[datetime]) -> bool:
+        self._commit_state = _COMMIT_FAILURE
         pathspecs = _path_strings(paths)
         if not pathspecs:
+            self._commit_state = _COMMIT_NO_DIFF
             return False
-        descriptor, index_name = tempfile.mkstemp(prefix="things3-sync-index-")
+        try:
+            descriptor, index_name = tempfile.mkstemp(prefix="things3-sync-index-")
+        except OSError as error:
+            _LOG.error("Could not initialize temporary Git index: %s", error)
+            return False
         os.close(descriptor)
         index_path = Path(index_name)
         try:
@@ -162,11 +171,13 @@ class GitClient:
             if staged is None or staged.returncode != 0:
                 return False
             diff = self._run(["diff", "--cached", "--quiet", "--"] + list(pathspecs), index_env)
-            if diff is None or diff.returncode == 0:
+            if diff is None:
+                return False
+            if diff.returncode == 0:
+                self._commit_state = _COMMIT_NO_DIFF
                 return False
             if diff.returncode != 1:
                 return False
-            self._commit_found_diff = True
             name_status = self._run(["diff", "--cached", "--name-status", "-z", "--"] + list(pathspecs), index_env)
             if name_status is None or name_status.returncode != 0:
                 return False
@@ -185,6 +196,7 @@ class GitClient:
         if refreshed is None or refreshed.returncode != 0:
             _LOG.error("Managed paths committed but real-index refresh failed")
             return False
+        self._commit_state = _COMMIT_SUCCESS
         return True
 
     def commit(self, changes: ChangeSet, paths: Sequence[Path], now: Optional[datetime] = None) -> bool:
@@ -233,9 +245,8 @@ class GitClient:
         committed = False
         pending = False
         if paths:
-            self._commit_found_diff = False
             committed = self.commit(changes, paths, now)
-            if self._commit_found_diff and not committed:
+            if self._commit_state == _COMMIT_FAILURE:
                 return (False, False)
             if committed:
                 if not self._mark_pending_push():
