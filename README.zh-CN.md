@@ -17,7 +17,7 @@
 ## 安装
 
 ```bash
-git clone REPOSITORY_URL things3-github-sync
+git clone https://github.com/OyamaMeek/Things3-push.git things3-github-sync
 cd things3-github-sync
 python3 -m venv .venv
 . .venv/bin/activate
