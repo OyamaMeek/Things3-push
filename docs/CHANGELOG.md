@@ -15,6 +15,29 @@
 
 ---
 
+## [2026-09-08 18:00] 完成集成测试、文档与最终验证
+
+- **需求/问题描述**：
+  > 完成剩余 Task 12-14。
+
+- **实际实现的功能与改动**：
+  - [集成测试]：覆盖本地 Git 同步、标题差异、任务移动、归档陌生文件保护和无关暂存隔离。
+  - [文档]：新增操作指南并将 `Agent.md` 与当前只读快照实现对齐。
+  - [安全]：脱敏历史上下文中的凭据形态值；已推送历史仍需在 GitHub 侧按保留策略处理。
+  - [验证]：完整测试 152 passed, 1 skipped，覆盖率 92%。
+
+- **涉及文件**：
+  - `tests/test_integration.py`
+  - `README.md`
+  - `Agent.md`
+  - `context/claude-code-things.py implementation-20260904.md`
+  - `.superpowers/sdd/2026-09-04-things3-sync-mvp/progress.md`
+  - `docs/CHANGELOG.md`
+
+- **Git 提交**：`c07e24a test: verify local sync end to end`、`0e8749f docs: document Things3 sync MVP`、`daee07f fix: redact historical token`
+
+---
+
 ## [2026-09-08 17:30] 添加初始化与 launchd 预览工具
 
 - **需求/问题描述**：

@@ -12,6 +12,17 @@ Status: complete
 
 ---
 
+## Tasks 12-14: Integration, Documentation, and Final Verification
+
+Status: complete
+
+- Task 12: real local Git integration coverage for idempotence, title diff, move, archive ownership, and unrelated-index isolation; independent review PASS.
+- Task 13: README and Agent.md aligned with the implemented read-only MVP and project-local launchd preview.
+- Task 14: `compileall`, `git diff --check`, `git fsck --no-dangling`, forbidden-operation scan, and coverage run passed; 152 passed, 1 skipped, 92% coverage.
+- Known limitation: a user-staged change to a synchronizer-managed path may be cleared when the isolated Git commit refreshes that managed path. Unrelated staged paths are preserved and covered by integration tests.
+
+---
+
 ## Task 11: Interactive Setup and launchd Preview Generator
 
 Status: complete
