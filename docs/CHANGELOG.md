@@ -54,6 +54,30 @@
 
 ---
 
+## [2026-09-08 18:25] 优化 GitHub 发布准备
+
+- **需求/问题描述**：
+  > 我打算发布到 GitHub，优化仓库的公开展示与自动验证。
+
+- **实际实现的功能与改动**：
+  - [CI]：增加 macOS 上 Python 3.9 与 3.11 的编译、测试和覆盖率工作流。
+  - [仓库卫生]：忽略本地环境、覆盖率、日志、构建产物和 macOS 元数据，并从 Git 索引移除已跟踪的 `.DS_Store`。
+  - [公开信息]：为双语 README 添加构建徽章，新增漏洞报告指引。
+  - [测试/验证]：完整测试 152 passed, 1 skipped；`compileall` 与 `git diff --check` 通过。
+
+- **涉及文件**：
+  - `.github/workflows/tests.yml`
+  - `.gitignore`
+  - `README.md`
+  - `README.zh-CN.md`
+  - `SECURITY.md`
+  - `.DS_Store`
+  - `docs/.DS_Store`
+  - `docs/superpowers/.DS_Store`
+  - `docs/CHANGELOG.md`
+
+---
+
 ## [2026-09-08 17:30] 添加初始化与 launchd 预览工具
 
 - **需求/问题描述**：

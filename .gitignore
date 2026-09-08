@@ -1,2 +1,11 @@
 things.py/
 .claude/settings.local.json
+.env
+.venv/
+.coverage
+__pycache__/
+*.py[cod]
+.pytest_cache/
+build/
+logs/
+.DS_Store

@@ -1,5 +1,7 @@
 # Things3 到 Git Markdown 同步
 
+[![测试](https://github.com/OyamaMeek/Things3-push/actions/workflows/tests.yml/badge.svg)](https://github.com/OyamaMeek/Things3-push/actions/workflows/tests.yml)
+
 [English](README.md)
 
 将 macOS Things3 数据库中的任务以只读方式同步到已有 Git 仓库中的 Markdown 文件。服务只读取 Things3；不会写入 Things3、拉取远端、合并分支或修改系统 launchd 配置。
