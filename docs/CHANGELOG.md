@@ -51,3 +51,27 @@
 - **Git 提交**：`d758b28 feat: coordinate snapshot sync transactions`
 
 ---
+
+## [2026-09-08 17:19] 完成服务生命周期与主入口
+
+- **需求/问题描述**：
+  > 根据 HANDOFF20260908165643.md 继续开发，并闭合 Task 10 服务生命周期与主入口的独立复审。
+
+- **实际实现的功能与改动**：
+  - [服务生命周期]：启动时执行全量同步，随后启动数据库 watcher；停止请求在同步、watcher 启动和周期同步边界被重新检查，避免停止后的额外工作。
+  - [配置与退出]：拒绝非有限数值配置；正常退出时清理失败向上传播，入口据此返回失败状态。
+  - [独立复审]：Task 10 specification compliance 与 code quality review 均为 PASS。
+  - [测试/验证]：完整测试 `140 passed, 1 skipped`；`compileall`、`git diff --check` 与 `git fsck --no-dangling` 通过。
+
+- **涉及文件**：
+  - `main.py`
+  - `src/config.py`
+  - `src/service.py`
+  - `tests/test_config.py`
+  - `tests/test_service.py`
+  - `.superpowers/sdd/2026-09-04-things3-sync-mvp/progress.md`
+  - `docs/CHANGELOG.md`
+
+- **Git 提交**：`de49472 feat: run sync as a graceful service`
+
+---
