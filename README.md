@@ -160,3 +160,7 @@ PYTHONPATH=things.py:. python -m pytest tests -v
 - This is a one-way Things3-to-Markdown export; editing generated Markdown does not update Things3.
 - The public `things.py` read API is treated as sparse dictionary data, so fields it does not expose are not rendered.
 - Automated tests use fixtures and temporary Git repositories. Real Things3 access, remote pushes, and launchd load/unload remain operator checks.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

@@ -162,3 +162,7 @@ PYTHONPATH=things.py:. python -m pytest tests -v
 - 这是从 Things3 到 Markdown 的单向导出；编辑生成的 Markdown 不会更新 Things3。
 - 公共 `things.py` 读取 API 被视为稀疏字典数据，因此不会渲染其未公开的字段。
 - 自动化测试使用样本和临时 Git 仓库；真实 Things3 访问、远端推送、launchd 加载与卸载仍需由操作者验收。
+
+## 许可证
+
+本项目采用 [MIT 许可证](LICENSE)。
