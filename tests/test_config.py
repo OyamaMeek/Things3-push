@@ -12,6 +12,24 @@ def test_config_applies_documented_defaults(tmp_path):
     runner = Mock(side_effect=runner); config = AppConfig.from_env(valid_env(repo), git_runner=runner)
     assert config.repo_path == repo.resolve(); assert config.watch_debounce_seconds == 2.0; assert config.full_sync_interval == 3600.0; assert config.git_timeout_seconds == 30.0; assert config.git_remote == "origin"; assert config.git_branch == "main"; assert runner.call_count == 2
 
+def test_config_rejects_non_finite_positive_float_values(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    for name, value in {
+        "WATCH_DEBOUNCE_SECONDS": "nan",
+        "FULL_SYNC_INTERVAL": "inf",
+        "GIT_TIMEOUT_SECONDS": "-inf",
+    }.items():
+        runner = Mock(
+            side_effect=[
+                Mock(returncode=0, stdout="true\n", stderr=""),
+                Mock(returncode=0, stdout="main\n", stderr=""),
+            ]
+        )
+        with pytest.raises(ValueError, match=f"{name} must be finite"):
+            AppConfig.from_env(valid_env(repo) | {name: value}, git_runner=runner)
+
+
 def test_config_rejects_push_without_commit(tmp_path):
     repo = tmp_path / "repo"; repo.mkdir()
     with pytest.raises(ValueError, match="AUTO_PUSH requires AUTO_COMMIT"): AppConfig.from_env(valid_env(repo) | {"AUTO_COMMIT":"false", "AUTO_PUSH":"true"}, git_runner=Mock())

@@ -1,3 +1,4 @@
+import math
 import os
 import subprocess
 from dataclasses import dataclass
@@ -31,6 +32,8 @@ class AppConfig:
         def number(name, default, cast=float, positive=False, nonnegative=False):
             try: result = cast(values.get(name, str(default)))
             except (TypeError, ValueError): raise ValueError(f"{name} must be numeric")
+            if isinstance(result, float) and not math.isfinite(result):
+                raise ValueError(f"{name} must be finite")
             if positive and result <= 0: raise ValueError(f"{name} must be positive")
             if nonnegative and result < 0: raise ValueError(f"{name} must be non-negative")
             return result
