@@ -4,6 +4,8 @@
 
 [English](README.md)
 
+需要从首次安装到日常维护的分步说明，请阅读[使用手册](docs/USAGE.zh-CN.md)。
+
 将 macOS Things3 数据库中的任务以只读方式同步到已有 Git 仓库中的 Markdown 文件。服务只读取 Things3；不会写入 Things3、拉取远端、合并分支或修改系统 launchd 配置。
 
 ## 环境要求
