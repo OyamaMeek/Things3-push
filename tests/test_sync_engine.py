@@ -180,7 +180,7 @@ def test_sync_logs_counts_results_and_failure_markers(tmp_path, caplog):
     assert "added=2 modified=1 deleted=1" in message
     assert "committed=True pushed=False" in message
 
-    failing_renderer = Mock(side_effect=ValueError("render failed"))
+    failing_renderer = Mock(side_effect=ValueError("render failed /private/TARGET/db.sqlite?password=SECRET"))
     failing_engine = SyncEngine(
         config(tmp_path),
         Mock(read_snapshot=Mock(return_value=ThingsSnapshot())),
@@ -189,12 +189,14 @@ def test_sync_logs_counts_results_and_failure_markers(tmp_path, caplog):
         Mock(),
     )
     with caplog.at_level(logging.ERROR, logger=sync_engine_module._LOG.name):
-        with pytest.raises(ValueError, match="render failed"):
+        with pytest.raises(ValueError, match="render failed") as failure:
             failing_engine.sync()
     message = caplog.records[-1].getMessage()
     assert "stage=renderer" in message
     assert "added=unavailable" in message
     assert "committed=not executed pushed=not executed" in message
+    assert "error=present" in message
+    assert str(failure.value) not in message
 
 
 def test_logging_handler_failure_does_not_mask_error_or_lock_release(tmp_path, monkeypatch):

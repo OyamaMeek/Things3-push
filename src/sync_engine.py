@@ -96,7 +96,7 @@ class SyncEngine:
                 )
             else:
                 _LOG.error(
-                    "sync failed stage=%s duration=%.3fs added=%s modified=%s deleted=%s committed=%s pushed=%s error=%r",
+                    "sync failed stage=%s duration=%.3fs added=%s modified=%s deleted=%s committed=%s pushed=%s error=present",
                     status["stage"],
                     duration,
                     counts[0],
@@ -104,7 +104,6 @@ class SyncEngine:
                     counts[2],
                     committed,
                     pushed,
-                    error,
                 )
         except BaseException:
             # Logging must never hide a pipeline exception or prevent unlock.
