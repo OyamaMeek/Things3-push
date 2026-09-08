@@ -15,6 +15,25 @@
 
 ---
 
+## [2026-09-08 17:30] 添加初始化与 launchd 预览工具
+
+- **需求/问题描述**：
+  > 根据 HANDOFF20260908165643.md 继续完成 Task 11。
+
+- **实际实现的功能与改动**：
+  - [初始化]：交互校验本地 Git 仓库，原子且排他地生成 `.env`，拒绝覆盖已有配置。
+  - [预览]：生成项目内 launchd plist 预览，不加载或修改系统 LaunchAgents。
+  - [测试/验证]：CLI 工具测试 7 passed；完整测试 147 passed, 1 skipped。
+
+- **涉及文件**：
+  - `setup.py`
+  - `generate_launchd.py`
+  - `tests/test_cli_tools.py`
+  - `.superpowers/sdd/2026-09-04-things3-sync-mvp/progress.md`
+  - `docs/CHANGELOG.md`
+
+---
+
 ## [2026-09-06 23:27] 修复隔离提交失败时误推送
 
 - **需求/问题描述**：

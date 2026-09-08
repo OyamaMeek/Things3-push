@@ -11,3 +11,13 @@ Status: complete
 - Additional checks: `compileall`, `git diff --check`, and `git fsck --no-dangling` passed.
 
 ---
+
+## Task 11: Interactive Setup and launchd Preview Generator
+
+Status: complete
+
+- Specification and code-quality review: PASS after two fix rounds (2026-09-08).
+- Verification: `tests/test_cli_tools.py` -> 7 passed; full suite -> 147 passed, 1 skipped.
+- Safety: setup writes `.env` with an exclusive publication step, and plist generation remains project-local.
+
+---
