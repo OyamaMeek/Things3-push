@@ -9471,7 +9471,7 @@ Output:
 403	    def test_api_complete(self, os_system):
 404	        things.complete("test_uuid")
 405	        os_system.assert_called_once_with(
-406	            "open 'things:///update?id=test_uuid&completed=True&auth-token=vKkylosuSuGwxrz7qcklOw'"
+406	            "open 'things:///update?id=test_uuid&completed=True&auth-token=REDACTED_TOKEN'"
 407	        )
 408	
 409	    def test_thingsdate(self):
@@ -10828,4 +10828,3 @@ README 也明确任务只存在这三种状态，且 `trashed` 与 `start` 是�
 - pytest 启用 doctest 选项：`things.py/setup.cfg:23-25`。
 - 当前 1.0.0 changelog 已声明 `reminder_time`、`url()`、`complete()` 与单连接回收机制：`things.py/CHANGELOG.md:8-37`。
 - changelog 中“`complete()` returns updated task object”的文字与源码不符：源码没有 `return`，实际返回 `None`，且测试只验证 `os.system` 调用。对照 `things.py/CHANGELOG.md:12-15`、`things.py/things/api.py:752-767`、`things.py/tests/test_things.py:402-407`。
-
